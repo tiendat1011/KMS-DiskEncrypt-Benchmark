@@ -1,0 +1,27 @@
+---
+
+- name: Mount EBS Volume
+  hosts: aws-ap-southeast-2a
+  become: yes
+  tasks:
+    - name: Check volume is formated yet
+      command: lsblk -f /dev/xvdf
+      register: check_volume
+      changed_when: false
+
+    - name: Format volume if dont have filesystem
+      command: mkfs -t xfs /dev/xvdf
+      when: "'xfs' not in check_volume.stdout"
+
+    - name: Create mount directory
+      file:
+        path: /mnt/ebs
+        state: directory
+        mode: '0755'
+
+    - name: Mount xvdf volume into /mnt/ebs
+      mount:
+        path: /mnt/ebs
+        src: /dev/xvdf
+        fstype: xfs
+        state: mounted

@@ -6,13 +6,62 @@
   
   tasks:
     - name: Install fio (Amazon Linux 2023)
-      yum:
-        name: fio
-        state: present
-      when: ansible_distribution == "Amazon" && ansibile_distribution_version == 2023
-
-    - name: Install fio (Amazon Linux 2)
       dnf:
         name: fio
         state: present
-      when: ansible_distribution == "Amazon" && ansibile_distribution_version == 2
+
+    - name: Check write speed
+      command: fio --name=encrypted_write_test --filename=/mnt/ebs/encrypted-testfile --size=4G --time_based --runtime=6s --rw=write --bs=4k --ioengine=libaio --direct=1 --iodepth=32 --output=/tmp/encrypted_write_speed.log
+      register: encrypted_write_speed
+
+    - name: Check read speed
+      command: fio --name=encrypted_read_test --filename=/mnt/ebs/encrypted-testfile --size=4G --time_based --runtime=6s --rw=read --bs=4k --ioengine=libaio --direct=1 --iodepth=32 --output=/tmp/encrypted_read_speed.log
+      register: encrypted_read_speed
+
+    - name: Display result encrypted volume
+      debug:
+        msg: "{{ encrypted_write_speed.stdout }}"
+
+    - name: Display result encrypted volume
+      debug:
+        msg: "{{ encrypted_read_speed.stdout }}"
+    
+    - name: Get encrypted write result to control node
+      fetch:
+        src: /tmp/encrypted_write_speed.log
+        dest: ./tmp/
+        flat: yes
+
+    - name: Get encrypted read result to control node
+      fetch:
+        src: /tmp/encrypted_read_speed.log
+        dest: ./tmp/
+        flat: yes
+
+    - name: Check write speed
+      command: fio --name=write_test --filename=/home/testfile --size=4G --time_based --runtime=6s --rw=write --bs=4k --ioengine=libaio --direct=1 --iodepth=32 --output=/tmp/write_speed.log --output-format=json
+      register: write_speed
+
+    - name: Check read speed
+      command: fio --name=read_test --filename=/home/testfile --size=4G --time_based --runtime=6s --rw=read --bs=4k --ioengine=libaio --direct=1 --iodepth=32 --output=/tmp/read_speed.log --output-format=json
+      register: read_speed
+
+    - name: Display result
+      debug:
+        msg: "{{ write_speed.stdout }}"
+
+    - name: Display result
+      debug:
+        msg: "{{ read_speed.stdout }}"
+    
+    - name: Get write result to control node
+      fetch:
+        src: /tmp/write_speed.log
+        dest: ./tmp/
+        flat: yes
+
+    - name: Get read result to control node
+      fetch:
+        src: /tmp/read_speed.log
+        dest: ./tmp/
+        flat: yes

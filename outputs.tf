@@ -8,10 +8,10 @@ output "key_id" {
   value       = try(aws_kms_key.this[0].key_id)
 }
 
-output "key_policy" {
-  description = "The IAM resource policy set on the key"
-  value       = try(aws_kms_key.this[0].policy)
-}
+# output "key_policy" {
+#   description = "The IAM resource policy set on the key"
+#   value       = try(aws_kms_key.this[0].policy)
+# }
 
 # Alias
 

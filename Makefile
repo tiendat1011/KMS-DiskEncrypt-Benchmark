@@ -1,7 +1,6 @@
 # Biến lưu file output
-OUTPUT_FILE=terraform-output.txt
 
-.PHONY: init plan apply output destroy clean
+.PHONY: init plan apply output destroy	clean
 
 # Khởi tạo Terraform
 init:
@@ -25,4 +24,5 @@ destroy:
 
 # Dọn dẹp file output
 clean:
-	rm -f $(OUTPUT_FILE) terraform-output.json
+	rm terraform-output.json
+	rm -r ./ansible/tmp/*.log
