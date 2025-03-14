@@ -1,0 +1,18 @@
+---
+
+- name: Install and benchmark EBS Volume
+  hosts: aws-ap-southeast-2a
+  become: yes
+  
+  tasks:
+    - name: Install fio (Amazon Linux 2023)
+      yum:
+        name: fio
+        state: present
+      when: ansible_distribution == "Amazon" && ansibile_distribution_version == 2023
+
+    - name: Install fio (Amazon Linux 2)
+      dnf:
+        name: fio
+        state: present
+      when: ansible_distribution == "Amazon" && ansibile_distribution_version == 2

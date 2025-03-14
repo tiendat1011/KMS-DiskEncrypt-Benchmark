@@ -1,0 +1,9 @@
+---
+
+- name: Get Linux Distribution Info
+  hosts: aws-ap-southeast-2a
+  gather_facts: yes
+  tasks:
+    - name: Show OS Distribution
+      debug:
+        msg: "Distro: {{ ansible_distribution }} {{ ansible_distribution_version }}"
